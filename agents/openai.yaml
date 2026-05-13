@@ -1,0 +1,7 @@
+interface:
+  display_name: "Google Search Console"
+  short_description: "List and verify websites in Search Console"
+  default_prompt: "Use $google-search-console to add this website to Google Search Console, submit its sitemap, and verify the indexed homepage status."
+
+policy:
+  allow_implicit_invocation: true
