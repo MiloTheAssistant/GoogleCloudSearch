@@ -184,7 +184,12 @@ def credentials(args: argparse.Namespace) -> Any:
         if not credentials_path.exists():
             raise SystemExit(f"OAuth client JSON not found: {credentials_path}")
         flow = InstalledAppFlow.from_client_secrets_file(str(credentials_path), SCOPES)
-        creds = flow.run_local_server(port=0)
+        creds = flow.run_local_server(
+            port=args.auth_port,
+            authorization_prompt_message="Open this URL to authorize Search Console access: {url}",
+            success_message="Google Search Console authentication completed. You may close this tab.",
+            timeout_seconds=args.auth_timeout,
+        )
     token_path.write_text(creds.to_json(), encoding="utf-8")
     return creds
 
@@ -273,6 +278,8 @@ def placement_instructions(resource_type: str, identifier: str, response: dict[s
 def add_common_auth_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--credentials", default=str(DEFAULT_CREDENTIALS), help="OAuth installed-app client JSON path")
     parser.add_argument("--token", default=str(DEFAULT_TOKEN), help="OAuth token cache path")
+    parser.add_argument("--auth-port", type=int, default=8080, help="Local OAuth callback port")
+    parser.add_argument("--auth-timeout", type=int, default=300, help="Seconds to wait for OAuth browser callback")
 
 
 def build_parser() -> argparse.ArgumentParser:
